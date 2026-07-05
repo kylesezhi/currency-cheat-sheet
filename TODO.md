@@ -1,3 +1,351 @@
+# TODO: Replace ReportLab PDF Generation with HTML + WeasyPrint
+
+## Goal
+
+Replace the hand-drawn ReportLab renderer with an HTML/CSS-based renderer while preserving the existing visual design and wallet-card dimensions.
+
+New rendering pipeline:
+
+```
+Python Data
+    ↓
+Jinja2 Template
+    ↓
+HTML
+    ↓
+CSS
+    ↓
+WeasyPrint
+    ↓
+wallet-card.pdf
+```
+
+---
+
+# Milestone 1: Add Dependencies
+
+Install:
+
+- weasyprint
+- jinja2
+
+Optional:
+
+- playwright (for HTML preview/testing)
+
+---
+
+# Milestone 2: Project Structure
+
+```
+wallet-card/
+├── main.py
+├── templates/
+│   └── card.html
+├── static/
+│   └── card.css
+├── walletcard/
+│   ├── renderer.py
+│   ├── formatting.py
+│   ├── rates.py
+│   ├── denominations.py
+│   └── ...
+└── output/
+```
+
+---
+
+# Milestone 3: Create HTML Template
+
+Create:
+
+```
+templates/card.html
+```
+
+Template receives:
+
+```
+title
+exchange_rate_text
+rows
+generated_date
+```
+
+Example context:
+
+```python
+{
+    "title": "JPY → USD",
+    "exchange_rate_text": "1 USD ≈ 147 JPY",
+    "generated_date": "July 5, 2026",
+    "rows": [
+        {
+            "local": "¥100",
+            "usd": "$0.68"
+        },
+        ...
+    ]
+}
+```
+
+---
+
+# Milestone 4: Create CSS
+
+Create:
+
+```
+static/card.css
+```
+
+Requirements:
+
+- Exact ISO ID-1 card dimensions
+- Landscape orientation
+- Monospace font
+- Thin margins
+- Zebra striping
+- Right-aligned USD column
+- Header rule
+- Footer right aligned
+- Optimized for grayscale printing
+
+Use CSS variables for:
+
+```
+--margin
+--row-height
+--font-size
+--stripe-color
+--rule-color
+```
+
+---
+
+# Milestone 5: Match Existing Layout
+
+Reproduce the current design exactly.
+
+Header:
+
+```
+JPY → USD
+1 USD ≈ 147 JPY
+────────────────────────
+```
+
+Body:
+
+```
+¥100          $0.68
+¥200          $1.36
+¥500          $3.40
+...
+```
+
+Features:
+
+- alternating row background
+- no vertical lines
+- no interior horizontal rules
+- bold rule under header
+- bold rule above footer
+
+Footer:
+
+```
+Generated July 5, 2026
+```
+
+right aligned.
+
+---
+
+# Milestone 6: CSS Print Layout
+
+Use:
+
+```css
+@page {
+    size: 85.6mm 53.98mm;
+    margin: 0;
+}
+```
+
+Card container:
+
+```
+85.6mm × 53.98mm
+```
+
+Verify:
+
+- prints actual size
+- no scaling
+- no clipping
+
+---
+
+# Milestone 7: Renderer
+
+Implement:
+
+```python
+render_card(data, output_path)
+```
+
+Responsibilities:
+
+- Load Jinja template
+- Render HTML
+- Load CSS
+- Generate PDF via WeasyPrint
+- Save output
+
+---
+
+# Milestone 8: HTML Preview
+
+Optional but recommended.
+
+Implement:
+
+```
+render_preview(data)
+```
+
+Outputs:
+
+```
+output/card.html
+```
+
+Benefits:
+
+- Open in browser
+- Instant iteration
+- Browser DevTools
+- No PDF generation required during design
+
+---
+
+# Milestone 9: Responsive Layout
+
+Avoid absolute positioning.
+
+Use CSS Grid or Flexbox.
+
+Requirements:
+
+- Local currency left aligned
+- USD right aligned
+- Columns remain visually close together
+- Rows automatically size to available height
+
+No hardcoded pixel coordinates.
+
+---
+
+# Milestone 10: Typography
+
+Investigate fonts.
+
+Candidates:
+
+- IBM Plex Mono
+- JetBrains Mono
+- Fira Mono
+- Courier New
+- Cascadia Mono
+
+Goal:
+
+- Excellent readability
+- Narrow glyphs
+- Good printed appearance
+
+---
+
+# Milestone 11: Print Validation
+
+Verify:
+
+- Credit-card dimensions
+- Wallet fit
+- Black-and-white laser printer
+- Inkjet printer
+- Browser print preview
+- WeasyPrint output
+
+---
+
+# Milestone 12: Regression Testing
+
+Ensure visual parity with the ReportLab version.
+
+Checklist:
+
+- Header spacing
+- Footer alignment
+- Zebra striping
+- Column spacing
+- Typography
+- Margins
+- Card dimensions
+
+---
+
+# Stretch Goals
+
+- Browser live preview during development
+- Multiple cards on one US Letter page
+- Cut marks
+- QR code linking to live exchange rates
+- Optional dark preview theme (HTML only)
+- Theme support
+- Custom fonts
+- SVG currency symbols
+- Automatic font scaling for long values
+
+---
+
+# Definition of Done
+
+Running:
+
+```
+python main.py JPY
+```
+
+should:
+
+1. Retrieve the exchange rate.
+2. Generate denomination rows.
+3. Render HTML using Jinja2.
+4. Apply CSS styling.
+5. Produce a wallet-sized PDF via WeasyPrint.
+6. Save:
+
+```
+output/JPY-wallet-card.pdf
+```
+
+Additionally, during development:
+
+```
+python main.py JPY --preview
+```
+
+should generate:
+
+```
+output/JPY-wallet-card.html
+```
+
+that can be opened in any modern browser for rapid visual iteration before generating the final PDF.
+
+
 # Wallet Currency Cheat Sheet
 
 ## Goal
