@@ -94,36 +94,45 @@ body {
     height: 53mm;
     min-height: auto;
     margin: 0 auto;
-    padding: 2.5mm 3.5mm 3.5mm 3.5mm;
+    padding: 2.5mm 3.5mm 4mm 3.5mm;
     border: 1px dashed #999;
     background: #fff;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
     box-sizing: border-box;
     overflow: hidden;
     page-break-after: always;
   }
 
+  .header {
+    gap: 1mm;
+  }
+
   .title {
-    font-size: 9.5pt;
+    font-size: 9pt;
   }
 
   .subtitle {
-    font-size: 6pt;
+    font-size: 5.5pt;
   }
 
   .divider {
     height: 0.5pt;
-    margin: 1mm 0;
+    margin: 0.8mm 0;
+  }
+
+  .rates {
+    flex: 1;
   }
 
   .rates td {
-    padding: 0.7mm 0.6mm;
-    font-size: 7pt;
+    padding: 0.5mm 0.5mm;
+    font-size: 6.5pt;
   }
 
   .footer {
-    margin-top: 1mm;
-    font-size: 5pt;
+    margin-top: auto;
+    font-size: 4.5pt;
   }
 }
