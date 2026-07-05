@@ -33,8 +33,8 @@ ROWS = [
 
 @dataclass(frozen=True)
 class Style:
-    left_margin = 3 * mm
-    right_margin = 3 * mm
+    left_margin = 20 * mm
+    right_margin = 20 * mm
     top_margin = 3 * mm
     bottom_margin = 3 * mm
 
