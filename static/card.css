@@ -50,7 +50,6 @@ body {
 .rates {
   width: 100%;
   border-collapse: collapse;
-  flex: 1; /* lets table fill vertical space */
 }
 
 .rates tr {
