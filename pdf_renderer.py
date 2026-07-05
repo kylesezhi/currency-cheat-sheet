@@ -1,13 +1,11 @@
-from reportlab.lib.pagesizes import landscape
+from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet
 from datetime import date
 
 
-PAGE_WIDTH = 85.6 * mm
-PAGE_HEIGHT = 54 * mm
+CARD_WIDTH = 85.60 * mm
+CARD_HEIGHT = 53.98 * mm
 
 
 MOCK_DATA = [
@@ -22,76 +20,86 @@ MOCK_DATA = [
 
 
 def format_date(d: date) -> str:
-    # "July 5, 2026"
-    return d.strftime("%B %-d, %Y") if hasattr(d, "strftime") else str(d)
+    return d.strftime("%B %d, %Y")
+
+
+def draw_card(c: canvas.Canvas):
+    # ─────────────────────────────
+    # Layout constants (tuned for wallet readability)
+    # ─────────────────────────────
+    left_margin = 3 * mm
+    top_margin = 4 * mm
+
+    row_height = 4.6 * mm
+    font_size = 5.8
+
+    # Header
+    c.setFont("Courier-Bold", 6.5)
+    c.drawString(left_margin, CARD_HEIGHT - top_margin, "JPY → USD")
+
+    c.setFont("Courier", 5.5)
+    c.drawString(left_margin, CARD_HEIGHT - top_margin - 3 * mm, "1 USD ≈ 147 JPY")
+
+    # Table header line
+    y = CARD_HEIGHT - top_margin - 7 * mm
+
+    c.setStrokeColor(colors.black)
+    c.setLineWidth(0.5)
+    c.line(left_margin, y, CARD_WIDTH - left_margin, y)
+
+    y -= row_height
+
+    # Rows
+    c.setFont("Courier", font_size)
+
+    for i, (local, usd) in enumerate(MOCK_DATA):
+        # Zebra stripe (very subtle gray background)
+        if i % 2 == 1:
+            c.setFillColor(colors.whitesmoke)
+            c.rect(
+                0,
+                y - 1.2 * mm,
+                CARD_WIDTH,
+                row_height,
+                fill=1,
+                stroke=0,
+            )
+            c.setFillColor(colors.black)
+
+        # Text columns
+        c.drawString(left_margin, y, local)
+        c.drawString(CARD_WIDTH / 2, y, usd)
+
+        # Row separator (light)
+        c.setStrokeColor(colors.lightgrey)
+        c.setLineWidth(0.3)
+        c.line(left_margin, y - 1.5 * mm, CARD_WIDTH - left_margin, y - 1.5 * mm)
+
+        y -= row_height
+
+        # Hard stop if we run out of space (prevents overflow entirely)
+        if y < 8 * mm:
+            break
+
+    # Footer (right-aligned)
+    c.setFont("Courier", 5)
+    footer_text = f"Generated {format_date(date.today())}"
+    text_width = c.stringWidth(footer_text, "Courier", 5)
+
+    c.drawString(
+        CARD_WIDTH - text_width - left_margin,
+        3 * mm,
+        footer_text
+    )
 
 
 def build_pdf(filename="wallet_card.pdf"):
-    doc = SimpleDocTemplate(
-        filename,
-        pagesize=landscape((PAGE_WIDTH, PAGE_HEIGHT)),
-        leftMargin=3 * mm,
-        rightMargin=3 * mm,
-        topMargin=3 * mm,
-        bottomMargin=3 * mm,
-    )
+    c = canvas.Canvas(filename, pagesize=(CARD_WIDTH, CARD_HEIGHT))
 
-    styles = getSampleStyleSheet()
-    style = styles["Normal"]
-    style.fontName = "Courier"
-    style.fontSize = 6
-    style.leading = 7
+    draw_card(c)
 
-    elements = []
-
-    # Header
-    header = Paragraph(
-        "<b>JPY → USD</b>   |   1 USD = ~147 JPY",
-        style
-    )
-    elements.append(header)
-    elements.append(Spacer(1, 2 * mm))
-
-    # Table
-    table_data = [["Local", "USD"]] + MOCK_DATA
-
-    table = Table(table_data, colWidths=[35 * mm, 35 * mm])
-
-    style_list = [
-        ("FONT", (0, 0), (-1, -1), "Courier", 6),
-
-        # Header emphasis
-        ("LINEBELOW", (0, 0), (-1, 0), 0.5, colors.black),
-
-        # Light horizontal rules for scanability
-        ("LINEBELOW", (0, 1), (-1, -1), 0.25, colors.grey),
-
-        ("ALIGN", (0, 0), (-1, -1), "LEFT"),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-
-        ("TOPPADDING", (0, 0), (-1, -1), 1),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 1),
-    ]
-
-    # Zebra striping (very subtle, print-safe)
-    for i in range(1, len(table_data)):
-        if i % 2 == 1:
-            style_list.append(
-                ("BACKGROUND", (0, i), (-1, i), colors.whitesmoke)
-            )
-
-    table.setStyle(TableStyle(style_list))
-    elements.append(table)
-
-    # Footer (right aligned)
-    footer = Paragraph(
-        f'<para alignment="right">Generated {format_date(date.today())}</para>',
-        style
-    )
-    elements.append(Spacer(1, 2 * mm))
-    elements.append(footer)
-
-    doc.build(elements)
+    c.showPage()
+    c.save()
 
 
 if __name__ == "__main__":
