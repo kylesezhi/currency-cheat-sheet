@@ -1,0 +1,66 @@
+body {
+  margin: 0;
+  background: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  color: #111;
+}
+
+.card {
+  width: 720px;
+  margin: 40px auto;
+  padding: 24px 28px;
+  border: 1px solid #e5e5e5;
+  background: #fff;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #333;
+}
+
+.divider {
+  height: 1px;
+  background: #000;
+  margin: 18px 0;
+  opacity: 0.8;
+}
+
+.rates {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rates tr {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.rates tr:nth-child(even) {
+  background: #f3f3f3;
+}
+
+.rates td {
+  padding: 14px 8px;
+  font-size: 18px;
+}
+
+.rates td.value {
+  text-align: right;
+}
+
+.footer {
+  margin-top: 18px;
+  font-size: 14px;
+  color: #333;
+  text-align: right;
+}
