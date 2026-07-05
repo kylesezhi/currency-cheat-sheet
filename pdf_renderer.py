@@ -9,8 +9,8 @@ from reportlab.pdfgen import canvas
 # Card
 ###############################################################################
 
-CARD_WIDTH = 85.60 * mm
-CARD_HEIGHT = 53.98 * mm
+CARD_WIDTH = 53.98 * mm
+CARD_HEIGHT = 85.60 * mm
 
 ###############################################################################
 # Mock data
@@ -33,8 +33,8 @@ ROWS = [
 
 @dataclass(frozen=True)
 class Style:
-    left_margin = 25 * mm
-    right_margin = 25 * mm
+    left_margin = 5 * mm
+    right_margin = 5 * mm
     top_margin = 3 * mm
     bottom_margin = 3 * mm
 
@@ -73,7 +73,7 @@ def draw_header(c):
         "JPY → USD",
     )
 
-    subtitle_y = title_y - 3.3 * mm
+    subtitle_y = title_y - 4.5 * mm
 
     c.setFont("Courier", S.subtitle_size)
     c.drawString(
@@ -82,7 +82,7 @@ def draw_header(c):
         "1 USD ≈ 147 JPY",
     )
 
-    rule_y = subtitle_y - 2.8 * mm
+    rule_y = subtitle_y - 3.5 * mm
 
     c.setStrokeColor(S.rule_color)
     c.setLineWidth(S.heavy_rule)
