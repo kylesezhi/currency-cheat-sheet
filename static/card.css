@@ -1,3 +1,8 @@
+@page {
+  size: letter;
+  margin: 10mm;
+}
+
 body {
   margin: 0;
   background: #ffffff;
@@ -74,4 +79,51 @@ body {
   font-size: 12px;
   color: #333;
   text-align: right;
+}
+
+/* ── Print: credit-card-sized cutout on Letter ── */
+@media print {
+  body {
+    display: block;
+    padding: 0;
+    background: none;
+  }
+
+  .card {
+    width: 85mm;
+    height: 53mm;
+    min-height: auto;
+    margin: 0 auto;
+    padding: 2.5mm 3.5mm 3.5mm 3.5mm;
+    border: 1px dashed #999;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow: hidden;
+    page-break-after: always;
+  }
+
+  .title {
+    font-size: 9.5pt;
+  }
+
+  .subtitle {
+    font-size: 6pt;
+  }
+
+  .divider {
+    height: 0.5pt;
+    margin: 1mm 0;
+  }
+
+  .rates td {
+    padding: 0.7mm 0.6mm;
+    font-size: 7pt;
+  }
+
+  .footer {
+    margin-top: 1mm;
+    font-size: 5pt;
+  }
 }
