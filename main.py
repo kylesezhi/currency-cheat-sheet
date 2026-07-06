@@ -1,30 +1,40 @@
-"""Generate a wallet-sized currency cheat-sheet PDF."""
+"""Generate a wallet-sized currency cheat-sheet PDF.
 
+Usage
+-----
+    python main.py JPY
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
 from pathlib import Path
 
+from walletcard.converter import build_card_data
 from walletcard.renderer import render_card
 
 OUTPUT_DIR = Path("output")
 
 
 def main() -> None:
-    """Render a sample wallet card with dummy data."""
-    data = {
-        "title": "JPY → USD",
-        "exchange_rate_text": "1 USD ≈ 147 JPY",
-        "generated_date": "July 5, 2026",
-        "rows": [
-            {"local": "¥100", "usd": "$0.68"},
-            {"local": "¥200", "usd": "$1.36"},
-            {"local": "¥500", "usd": "$3.40"},
-            {"local": "¥1,000", "usd": "$6.80"},
-            {"local": "¥2,000", "usd": "$13.60"},
-            {"local": "¥5,000", "usd": "$34.00"},
-            {"local": "¥10,000", "usd": "$68.00"},
-        ],
-    }
+    parser = argparse.ArgumentParser(
+        description="Generate a wallet-sized currency cheat-sheet PDF.",
+    )
+    parser.add_argument(
+        "currency",
+        type=str.upper,
+        help="Three-letter currency code (e.g. JPY, CLP).",
+    )
+    args = parser.parse_args()
 
-    output_path = OUTPUT_DIR / "JPY-wallet-card.pdf"
+    try:
+        data = build_card_data(args.currency)
+    except (FileNotFoundError, KeyError) as exc:
+        print(f"❌ {exc}")
+        sys.exit(1)
+
+    output_path = OUTPUT_DIR / f"{args.currency}-wallet-card.pdf"
     render_card(data, output_path)
     print(f"✅ Wallet card saved to {output_path}")
 
