@@ -3,7 +3,7 @@
 > Wallet-sized PDF cheat cards for currency exchange rates —  
 > pick a currency, get a printable card with all the common denominations converted to USD.
 
-![Design mockup](images/landscape-design.png)
+![Design mockup](images/portrait.png)
 
 ---
 
