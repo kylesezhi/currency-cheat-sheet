@@ -299,7 +299,6 @@ Unit tests:
 
 - denomination generation
 - exchange rate parsing
-- cache fallback
 - currency formatting
 - config loading
 
