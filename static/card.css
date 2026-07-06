@@ -90,8 +90,8 @@ body {
   }
 
   .card {
-    width: 85mm;
-    height: 53mm;
+    width: 53mm;
+    height: 85mm;
     min-height: auto;
     margin: 0 auto;
     padding: 2.5mm 3.5mm 4mm 3.5mm;
