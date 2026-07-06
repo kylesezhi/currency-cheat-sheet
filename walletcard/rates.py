@@ -1,4 +1,4 @@
-"""Exchange rate retrieval from the Frankfurter API."""
+"""Exchange rate retrieval from the ExchangeRate-API (open.er-api.com)."""
 
 from __future__ import annotations
 
@@ -6,14 +6,14 @@ import json
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 
-FRANKFURTER_API = "https://api.frankfurter.app/latest?from={from_cur}&to=USD"
+EXCHANGE_RATE_API = "https://open.er-api.com/v6/latest/{from_cur}"
 
 
 def load_rate(from_cur: str) -> tuple[float, str]:
     """Return the exchange rate from *from_cur* to USD.
 
-    Calls the Frankfurter API.  Exits with a friendly message if the
-    API is unavailable.
+    Calls the ExchangeRate-API (open.er-api.com).  Exits with a
+    friendly message if the API is unavailable.
 
     Returns
     -------
@@ -21,11 +21,13 @@ def load_rate(from_cur: str) -> tuple[float, str]:
         *rate* is the multiplier to convert *from_cur* → USD.
         *rate_text* is a human-readable string like ``"1 USD ≈ 147 JPY"``.
     """
-    url = FRANKFURTER_API.format(from_cur=from_cur)
+    url = EXCHANGE_RATE_API.format(from_cur=from_cur)
     req = Request(url, headers={"User-Agent": "currency-cheat-sheet/0.1.0"})
     try:
         with urlopen(req, timeout=10) as resp:
             body = json.loads(resp.read().decode())
+        if body.get("result") != "success":
+            raise KeyError("API returned non-success result")
         rate = float(body["rates"]["USD"])
     except (URLError, json.JSONDecodeError, KeyError, TypeError):
         print(
