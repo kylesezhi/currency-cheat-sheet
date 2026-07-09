@@ -19,12 +19,16 @@
 
 ## How it works
 
-```
-config/currencies.json ───→ live exchange rate ───→ denomination list
-                                                          │
-                                                    convert each to USD
-                                                          │
-                                                    render HTML → PDF
+```mermaid
+flowchart TD
+    A[config/currencies.json] -->|load_currency| B[Currency config<br>symbol, locale, denominations]
+    C[ExchangeRate-API<br>open.er-api.com] -->|load_rate| D[Live rate → USD]
+    B --> E[generate_denominations<br>1-2-5 progression up to 5M]
+    D --> F[Convert each denomination<br>local × rate = USD]
+    E --> F
+    F --> G[Format rows<br>locale-aware numbers]
+    G --> H[card.html template<br>+ card.css styles]
+    H --> I[WeasyPrint → PDF<br>53mm × 85mm]
 ```
 
 1. **Load configuration** – reads the currency's symbol, locale, and known denominations from `config/currencies.json`.
@@ -104,8 +108,9 @@ The tool will automatically extend the list with a full 1-2-5 progression up to 
 ├── README.md
 ├── config/
 │   └── currencies.json              # Currency definitions
-├── design/
-│   └── landscape-design.png         # Design mockup
+├── images/
+│   ├── landscape-design.png         # Design mockup
+│   └── portrait.png                 # Portrait card mockup
 ├── static/
 │   └── card.css                     # Print-friendly card styles
 ├── templates/
